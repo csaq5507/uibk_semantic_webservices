@@ -1,4 +1,5 @@
 import db
+import ctx
 import random
 import feedparser
 from datetime import datetime
@@ -39,8 +40,6 @@ d1 = datetime.strptime('1/1/2018 1:30 PM', '%m/%d/%Y %I:%M %p')
 d2 = datetime.strptime('1/1/2019 4:50 AM', '%m/%d/%Y %I:%M %p')
 
 
-base_url = "http://localhost:5000"
-
 myDB.data["/events"] = {}
 myDB.data["/authors"] = {}
 location_ids = list(myDB.data["/locations"].keys())
@@ -56,7 +55,7 @@ for url in rss_event_feeds:
 
             author_entry = { 
                 "name": author_name,
-                "self": "{}/{}/{}".format(base_url, "authors", author_id) 
+                "self": "{}/{}/{}".format(ctx.base_url, "authors", author_id) 
             }
 
             authors_list.append(author_entry)
@@ -79,11 +78,11 @@ for url in rss_event_feeds:
             "location": { 
                 "id": location_id,
                 "name": location_name,
-                "self": "{}/{}/{}".format(base_url, "locations", location_id) 
+                "self": "{}/{}/{}".format(ctx.base_url, "locations", location_id) 
             },
             "date": random_date(d1, d2),
             "link": entry["link"],
-            "self": "{}/{}/{}".format(base_url, "events", event_id) 
+            "self": "{}/{}/{}".format(ctx.base_url, "events", event_id) 
         }
 
 
@@ -96,5 +95,5 @@ for resource in manager.get_all_resources():
 
     myDB.data["/"][id] = {
             "name": id,
-            "self": "{}{}".format(base_url, resource) 
+            "self": "{}{}".format(ctx.base_url, resource) 
         }
