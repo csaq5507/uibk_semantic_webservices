@@ -10,10 +10,44 @@ import manager
 
 myDB = db.db
 
+# ---------------------------------------------------------------------------------
+# utils to generate random dates in future
+
+def random_date(start, end):
+    delta = end - start
+    int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
+    random_second = randrange(int_delta)
+    return start + timedelta(seconds=random_second)
+
+def get_next_rnd_date():
+    d1 = datetime.strptime('1/1/2018 1:30 PM', '%m/%d/%Y %I:%M %p')
+    d2 = datetime.strptime('1/1/2019 4:50 AM', '%m/%d/%Y %I:%M %p')
+    return random_date(d1, d2)
+
+
+# ---------------------------------------------------------------------------------
+# Load data from rss feeds
+
+rss_event_feeds = [
+    "http://www.brixn.at/feed/",
+    "https://www.events-magazin.de/feed/"
+    ]
+
 url = 'cities.csv'
 df = pd.read_csv(url, parse_dates=True, delimiter=",", decimal=",")
 
+
+# ---------------------------------------------------------------------------------
+# Start mocking
+
 myDB.data["/locations"] = {}
+myDB.data["/events"] = {}
+myDB.data["/authors"] = {}
+
+
+# ---------------------------------------------------------------------------------
+# Mock location resource
+
 for index, row in df.iterrows():
     myDB.data["/locations"][db.next_id()] = { 
             "name": row["city"],  
@@ -24,29 +58,18 @@ for index, row in df.iterrows():
             "province": row["province"]
         }
 
-def random_date(start, end):
-    delta = end - start
-    int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
-    random_second = randrange(int_delta)
-    return start + timedelta(seconds=random_second)
-
-# Generate events with random locations and a random date
-rss_event_feeds = [
-    "http://www.brixn.at/feed/",
-    #"https://www.events-magazin.de/feed/"
-    ]
-
-d1 = datetime.strptime('1/1/2018 1:30 PM', '%m/%d/%Y %I:%M %p')
-d2 = datetime.strptime('1/1/2019 4:50 AM', '%m/%d/%Y %I:%M %p')
-
-
-myDB.data["/events"] = {}
-myDB.data["/authors"] = {}
 location_ids = list(myDB.data["/locations"].keys())
+
+
+# ---------------------------------------------------------------------------------
+# Mock event resource
 
 for url in rss_event_feeds:
     feed = feedparser.parse(url)
     for entry in feed[ "items" ]:   
+       
+        # ---------------------------------------------------------------------------------
+        # add authors from feed to db
 
         authors = [author["name"] for author in entry["authors"]]
         authors_list = []
@@ -60,9 +83,6 @@ for url in rss_event_feeds:
 
             authors_list.append(author_entry)
             myDB.data["/authors"][author_id] = author_entry
-
-
-
 
         categories = [t.term for t in entry.get('tags', [])]
 
@@ -80,14 +100,16 @@ for url in rss_event_feeds:
                 "name": location_name,
                 "self": "{}/{}/{}".format(ctx.base_url, "locations", location_id) 
             },
-            "date": random_date(d1, d2),
+            "date": get_next_rnd_date(),
             "link": entry["link"],
             "self": "{}/{}/{}".format(ctx.base_url, "events", event_id) 
         }
 
 
-myDB.data["/"] = {}
+# ---------------------------------------------------------------------------------
+# Entry-Points (index)
 
+myDB.data["/"] = {}
 for resource in manager.get_all_resources():
     id = resource.strip("/")
     if not id:
