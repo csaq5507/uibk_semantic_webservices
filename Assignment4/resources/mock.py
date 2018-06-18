@@ -119,3 +119,13 @@ for resource in manager.get_all_resources():
             "name": id,
             "self": "{}{}".format(ctx.base_url, resource) 
         }
+
+
+myDB.data["/api"] = {
+  "@context": "/hydra/api-demo/contexts/EntryPoint.jsonld",
+  "@id": "/hydra/api-demo/",
+  "@type": "EntryPoint",
+  "issues": "/hydra/api-demo/isssssssssssssssssssues/",
+  "register_user": "/hydra/api-demo/users/",
+  "users": "/hydra/api-demo/users/"
+}

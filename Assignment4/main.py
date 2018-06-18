@@ -7,13 +7,13 @@ from resources import index
 from resources import event
 from resources import location
 from resources import author
+from resources import entry_point
 
 from resources import mock
 
 import manager
 
 app = ctx.app
-
 
 @ctx.app.route("/", methods=['GET'])
 def index():
