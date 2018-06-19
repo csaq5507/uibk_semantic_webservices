@@ -28,8 +28,9 @@ class CRUD:
          }
 
         custom_entry = self.on_create_entry()
-
-        return  {**base_entry, **custom_entry}
+        combined = dict(base_entry)
+        combined.update(custom_entry)
+        return  combined
 
 
 
