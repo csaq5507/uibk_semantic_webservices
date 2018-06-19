@@ -10,5 +10,5 @@ class Event(crud.CRUD):
             "title": self.data["title"],
             "date": self.data["date"]
             }
-    
+
 crud.register(lambda: Event())

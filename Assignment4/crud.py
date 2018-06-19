@@ -61,3 +61,6 @@ class CRUD:
     
 def register(creation_func):
     manager.register(creation_func)
+
+def register_dynamic(creation_func):
+    manager.register_dynamic(creation_func)

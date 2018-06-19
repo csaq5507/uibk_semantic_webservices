@@ -7,7 +7,13 @@ from resources import index
 from resources import event
 from resources import location
 from resources import author
-from resources import entry_point
+from resources.hydra_api import entry_point
+from resources.hydra_api import context_entry_point
+from resources.hydra_api import context_event_collection
+from resources.hydra_api import context_event
+from resources.hydra_api import api_doc
+from resources.hydra_api import events
+
 
 from resources import mock
 

@@ -29,8 +29,8 @@ def get_next_rnd_date():
 # Load data from rss feeds
 
 rss_event_feeds = [
-    "http://www.brixn.at/feed/",
-    "https://www.events-magazin.de/feed/"
+    #"http://www.brixn.at/feed/",
+    #"https://www.events-magazin.de/feed/"
     ]
 
 url = 'cities.csv'

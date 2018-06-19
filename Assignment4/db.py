@@ -87,16 +87,15 @@ class Database:
     def get_events(self):
         return self.events
 
-    def add_event(self, entry):
-        valid = requires(entry, ["name", "date"])
-        if not valid[0]:
-            return valid
+    def add_event(self, name, entry):
+        if name not in self.data:
+            self.data[name] = {}
 
         id = next_id()
-        entry["id"] = id
-        self.events[id] = entry
-
-        return (True, entry)
-
+        if id in self.data[name]:
+            return ctx.error("Entry already exists", 1, 400)
+            
+        self.data[name][id] = entry
+        return id
 
 db = Database()

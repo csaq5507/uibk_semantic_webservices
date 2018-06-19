@@ -1,0 +1,9 @@
+{
+    "@context": "/api/contexts/Event.jsonld",
+    "@id": "/api/events/139",
+    "@type": "Event",
+    "name": "Halloween",
+    "description": "This is halloween, this is halloween",
+    "start_date": "2015-10-31T00:00:00Z",
+    "end_date": "2015-10-31T23:59:59Z"
+}
