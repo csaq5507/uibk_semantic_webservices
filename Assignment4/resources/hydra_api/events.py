@@ -22,7 +22,7 @@ class Events(crud.CRUD):
     def post(self, data):
 
         id = myDB.add_event("event", data)
-        event_url = "{}/hydra/event-api/events/{}".format(ctx.base_url, id)
+        event_url = "{}/api/events/{}".format(ctx.base_url, id)
         headers = hydra.LINK_HEADER
         headers["location"] = event_url
         headers["content-location"] = event_url

@@ -19,6 +19,8 @@ def run(id=None):
         return obj.get(id)
     if method == "GET":
         return obj.getAll()
+    if method == "OPTION":
+        return obj.option()
     elif method == "POST":
         return obj.post(request.get_json())
     elif method == "PUT":
@@ -30,7 +32,7 @@ def register_dynamic(creator):
     unified_location = creator().location.rstrip("/")
 
     view_func = run
-    view_func.methods = ['GET', 'POST', 'PUT', 'DELETE']
+    view_func.methods = ['GET', 'POST', 'PUT', 'DELETE', 'OPTION']
 
     ctx.app.add_url_rule(unified_location, unified_location, view_func)
     ctx.app.add_url_rule(unified_location + "/", unified_location, view_func)
