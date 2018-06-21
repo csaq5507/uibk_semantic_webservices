@@ -90,8 +90,8 @@ class Database:
         
     def getAll_(self, name):
         if name not in self.data:
-            return []  
-        return list(self.data[name].items())
+            return []
+        return list(self.data[name].values())
 
     def get_(self, name, id):        
         if name not in self.data:
@@ -101,6 +101,16 @@ class Database:
             return ctx.error("Entry not found", 1, 404)
             
         return self.data[name][id]
+
+    def delete_(self, name, id):        
+        if name not in self.data:
+            return ctx.error("Entry not found", 1, 404)
+
+        if id not in self.data[name]:
+            return ctx.error("Entry not found", 1, 404)
+            
+        del self.data[name][id]
+        return None
 
     def add_(self, name, entry):
         if name not in self.data:
@@ -116,5 +126,39 @@ class Database:
 
         self.data[name][id] = entry
         return id
+
+    def replace_(self, name, id, entry):        
+        if name not in self.data:
+            return ctx.error("Entry not found", 1, 404)
+
+        if id not in self.data[name]:
+            return ctx.error("Entry not found", 1, 404)
+            
+        entry["@context"] =  "/api/contexts/{}.jsonld".format(name)
+        entry["@id"] =  "/api/events/{}".format(id)
+        entry["@type"] =  name
+
+        self.data[name][id] = entry
+
+        return 
+
+    def update_(self, name, id, entry):        
+        if name not in self.data:
+            return ctx.error("Entry not found", 1, 404)
+
+        if id not in self.data[name]:
+            return ctx.error("Entry not found", 1, 404)
+            
+        data = self.data[name][id]
+
+        for key in entry:
+            if key.startswith("@"):
+                continue
+            if key not in data:
+                return ctx.error("Unknown field '{}'".format(key), 1, 400)
+            data[key] = entry[key]
+            
+        self.data[name][id] = data
+        return data
 
 db = Database()

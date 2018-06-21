@@ -22,8 +22,13 @@ class Events(crud.CRUD):
         event = myDB.get_("Event", id)
         if type(event) is Response:
             return event
-
         return ctx.success(event, 200, headers = hydra.LINK_HEADER)
+
+    def delete(self, id):
+        event = myDB.delete_("Event", id)
+        if type(event) is Response:
+            return event
+        return ctx.success({}, 200, headers = hydra.LINK_HEADER)
 
     def post(self, data):
         id = myDB.add_("Event", data)
@@ -36,7 +41,16 @@ class Events(crud.CRUD):
         headers["content-location"] = event_url
         return ctx.success(data, 201, headers=headers)
 
-    def put(self, data):
-        return ctx.success(data, 201, headers=headers)
+    def put(self, data, id):
+        event = myDB.replace_("Event", id, data)
+        if type(event) is Response:
+            return event
+        return ctx.success(event, 200, headers = hydra.LINK_HEADER)
+
+    def put(self, data, id):
+        event = myDB.update_("Event", id, data)
+        if type(event) is Response:
+            return event
+        return ctx.success(event, 200, headers = hydra.LINK_HEADER)
 
 crud.register_dynamic(lambda: Events())

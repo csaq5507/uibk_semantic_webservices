@@ -23,10 +23,10 @@ def run(id=None):
         return obj.option()
     elif method == "POST":
         return obj.post(request.get_json())
-    elif method == "PUT":
-        return obj.put()
-    elif method == "DELETE":
-        return obj.delete()
+    elif method == "PUT" and id:
+        return obj.put(request.get_json(), id)
+    elif method == "DELETE" and id:
+        return obj.delete(id)
 
 def register_dynamic(creator):
     unified_location = creator().location.rstrip("/")

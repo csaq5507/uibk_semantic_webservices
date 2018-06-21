@@ -1,0 +1,20 @@
+// Input EntryPoint url
+example http://localhost:5000/api
+
+// GET on EntryPoint url
+http://localhost:5000/api
+Parse header:
+link: <http://localhost:5000/api/vocab>; rel="http://www.w3.org/ns/hydra/core#apiDocumentation"
+
+// Read documentation
+http://localhost:5000/api/vocab
+
+foreach supportedClass:
+   foreach supportedOperation:
+      If put or post:
+          generate forms for given type in "expects"
+          for example for events POST the expects type is "http://schema.org/Event"
+          now search for "http://schema.org/Event" in supportedClasses there 
+          you find the needed "supportedProperty" (foreach property one input field)
+      generate button with the operation name
+      

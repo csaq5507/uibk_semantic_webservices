@@ -90,6 +90,25 @@
                     ]
                 },
                 {
+                    "@id": "_:event_patch",
+                    "@type": "http://schema.org/UpdateAction",
+                    "method": "PATCH",
+                    "label": "Updates some fields an existing Event entity",
+                    "description": null,
+                    "expects": "http://schema.org/Event",
+                    "returns": "http://schema.org/Event",
+                    "statusCodes": [
+                        {
+                            "code": 404,
+                            "description": "If the Event entity wasn't found."
+                        },
+                        {
+                            "code": 400,
+                            "description": "If a unknown field is submited"
+                        }
+                    ]
+                },
+                {
                     "@id": "_:event_delete",
                     "@type": "http://schema.org/DeleteAction",
                     "method": "DELETE",
@@ -97,7 +116,16 @@
                     "description": null,
                     "expects": null,
                     "returns": "http://www.w3.org/2002/07/owl#Nothing",
-                    "statusCodes": []
+                    "statusCodes": [
+                        {
+                            "code": 404,
+                            "description": "If the Event entity wasn't found."
+                        },
+                        {
+                            "code": 200,
+                            "description": "If the Event was deleted successfully."
+                        }
+                    ]
                 },
                 {
                     "@id": "_:event_retrieve",
