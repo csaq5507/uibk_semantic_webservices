@@ -64,6 +64,16 @@ location_ids = list(myDB.data["/locations"].keys())
 # ---------------------------------------------------------------------------------
 # Mock event resource
 
+test_entry = {
+    "name": "Halloween",
+    "description": "This is halloween, this is halloween",
+    "start_date": "2015-10-31T00:00:00Z",
+    "end_date": "2015-10-31T23:59:59Z"
+}
+
+myDB.add_("Event", test_entry)
+
+
 for url in rss_event_feeds:
     feed = feedparser.parse(url)
     for entry in feed[ "items" ]:   
@@ -89,6 +99,19 @@ for url in rss_event_feeds:
         event_id = db.next_id()
         location_id = random.choice(location_ids)
         location_name = myDB.data["/locations"][location_id]["name"]
+
+        test_entry = {
+            "@context": "/api/contexts/Event.jsonld",
+            "@id": "/api/events/139",
+            "@type": "Event",
+            "name": "Halloween",
+            "description": "This is halloween, this is halloween",
+            "start_date": "2015-10-31T00:00:00Z",
+            "end_date": "2015-10-31T23:59:59Z"
+        }
+
+        myDB.add("event", test_entry)
+
 
         myDB.data["/events"][event_id] = { 
             "title": entry["title"], 

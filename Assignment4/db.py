@@ -86,8 +86,23 @@ class Database:
 
     def get_events(self):
         return self.events
+        
+        
+    def getAll_(self, name):
+        if name not in self.data:
+            return []  
+        return list(self.data[name].items())
 
-    def add_event(self, name, entry):
+    def get_(self, name, id):        
+        if name not in self.data:
+            return ctx.error("Entry not found", 1, 404)
+
+        if id not in self.data[name]:
+            return ctx.error("Entry not found", 1, 404)
+            
+        return self.data[name][id]
+
+    def add_(self, name, entry):
         if name not in self.data:
             self.data[name] = {}
 
@@ -95,6 +110,10 @@ class Database:
         if id in self.data[name]:
             return ctx.error("Entry already exists", 1, 400)
             
+        entry["@context"] =  "/api/contexts/{}.jsonld".format(name)
+        entry["@id"] =  "/api/events/{}".format(id)
+        entry["@type"] =  name
+
         self.data[name][id] = entry
         return id
 
