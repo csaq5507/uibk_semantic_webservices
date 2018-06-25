@@ -43,6 +43,7 @@ class Request {
     // HTTP response body.
     private $responseBody;
     // HTTP response header.
+    private $requestHeader;
     private $responseHeader;
     // HTTP response status code.
     private $httpCode;
@@ -56,6 +57,7 @@ class Request {
             throw new Exception("Error: Address not provided.");
         }
         $this->address = $address;
+        $this->requestHeader = array();
     }
     /**
      * Set the address for the request.
@@ -150,6 +152,16 @@ class Request {
      */
     public function setRequestType($type) {
         $this->requestType = $type;
+    }
+
+    /**
+     * Set a request type (by default, cURL will send a GET request).
+     *
+     * @param string $type
+     *   GET, POST, DELETE, PUT, etc. Any standard request type will work.
+     */
+    public function setRequestHeader($line) {
+        array_push($this->requestHeader,$line);
     }
     /**
      * Set the POST fields (only used if $this->requestType is 'POST').
@@ -251,10 +263,13 @@ class Request {
         if (isset($this->requestType)) {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $this->requestType);
             // If POST fields are given, and this is a POST request, add fields.
-            if ($this->requestType == 'POST' && isset($this->postFields)) {
+            if (($this->requestType == 'POST' || $this->requestType == 'PUT' )&& isset($this->postFields)) {
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $this->postFields);
             }
         }
+        if(count($this->requestHeader)!=0)
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->requestHeader);
+
         // Don't print the response; return it from curl_exec().
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_URL, $this->address);
