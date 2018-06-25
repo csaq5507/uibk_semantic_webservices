@@ -29,6 +29,8 @@ if(isset($_POST["met"]) && isset($_POST["url"]))
 {
     $r = new \JJG\Request($_POST["url"]);
     $r->setRequestType($_POST["met"]);
+    $r->setRequestHeader("Content-Type: application/json");
+    $r->setRequestHeader("Accept: application/json");
     if($_POST["met"] == "POST" || $_POST["met"] == "PUT" )
     {
         $post = array();
@@ -39,8 +41,10 @@ if(isset($_POST["met"]) && isset($_POST["url"]))
             else
                 $post[$key]=$value;
         }
-        $r->setPostFields($post);
+        $data_json = json_encode($post);
+        $r->setPostFields($data_json);
     }
+
     try {
         $r->execute();
         if ($r->getHttpCode() == 200) {
@@ -48,6 +52,15 @@ if(isset($_POST["met"]) && isset($_POST["url"]))
             if($result->{"@type"} == "EntryPoint")
             {
                 $url = $result->{"events"};
+                ?>
+                <script type="text/javascript">
+                    document.getElementsByTagName("body")[0].onload = function() {
+                        document.getElementById("class_picker").selectedIndex = 3;
+                        makeVisible(document.getElementById("class_picker"));
+                    }
+
+                </script>
+                <?php
             } else if($result->{"@type"}=="EventCollection")
             {
                 $events=$result->{"members"};
@@ -55,6 +68,8 @@ if(isset($_POST["met"]) && isset($_POST["url"]))
                 <script type="text/javascript">
                     function updateURL(url){
                         var elems = document.getElementsByName("url");
+                        document.getElementById("class_picker").selectedIndex=1;
+                        makeVisible(document.getElementById("class_picker"));
                         for(var i=0; i<elems.length;i++)
                         {
                             elems[i].value="<?php echo $base_url; ?>"+url;
@@ -67,15 +82,19 @@ if(isset($_POST["met"]) && isset($_POST["url"]))
                 <?php
                 for($i=0;$i<count($events);$i++)
                 {
-                    ?>
-                    <td>
-                        <h2><?php echo $events[$i]->{"name"};?></h2>
-                        <p><?php echo $events[$i]->{"description"}; ?></p>
-                        <a href="javascript:updateURL('<?php echo $events[$i]->{"@id"};?>')"><?php echo $events[$i]->{"@id"}; ?></a><br>
-                        Starts At: <?php echo $events[$i]->{"start_date"}; ?><br>
-                        Ends At: <?php echo $events[$i]->{"end_date"}; ?><br>
-                    </td>
-                    <?php
+                                        $ev = (array) $events[$i];
+                    echo "<td>";
+                    foreach ($ev as $p_name=>$p_value)
+                    {
+                        if($p_name=="@id") {
+                            ?>
+                            <a href="javascript:updateURL('<?php echo $p_value; ?>')"><?php echo $p_value; ?></a><br>
+                            <?php
+                        } else
+                                echo "$p_name: $p_value<br>";
+
+                    }
+                    echo "</td>";
                     if($i%5==4)
                         echo "</tr><tr>";
                 }
@@ -83,9 +102,35 @@ if(isset($_POST["met"]) && isset($_POST["url"]))
                     </tr>
                 </table>
                 <?php
+            } else if($result->{"@type"}=="Event")
+            {
+
             }
-        } else
+        } else if($r->getHttpCode() == 201)
+        {
+            echo "Success!<br>";
+            $result = json_decode($r->getResponse());
+
+
+                $ev = (array) $result;
+                foreach ($ev as $p_name=>$p_value)
+                {
+                    if($p_name=="@id") {
+                        ?>
+                        <a href="javascript:updateURL('<?php echo $p_value; ?>')"><?php echo $p_value; ?></a><br>
+                        <?php
+                } else
+                    echo "$p_name: $p_value<br>";
+
+                }
+
+
+
+        } else if($r->getHttpCode() == 400) {
+            echo $r->getResponse();
+        } else {
             echo "Api not reachable. ".$r->getHttpCode();
+        }
     }catch (HttpException $ex) {
         echo $ex;
     }
@@ -125,7 +170,7 @@ try {
 
         </script>
 
-        <select onchange="makeVisible(this)">
+        <select id="class_picker" onchange="makeVisible(this)">
             <option value="">Please Select...</option>
             <?php
             for($i = 0; $i< count($support);$i++) {
