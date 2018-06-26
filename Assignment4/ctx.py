@@ -7,7 +7,7 @@ default_content_type = "application/ld+json"
 def success(response = None, status_code = 200, code = 0, plain = True, headers = {}):
     
     if plain:
-        r = Response(response=json.dumps(response), status=status_code, mimetype=default_content_type)
+        r = Response(response=json.dumps(response, indent=2), status=status_code, mimetype=default_content_type)
         r.headers["Content-Type"] = default_content_type
         for header_name in headers:
             r.headers[header_name] = headers[header_name]

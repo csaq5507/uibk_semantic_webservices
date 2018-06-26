@@ -23,6 +23,14 @@ class Context_Event(crud.CRUD):
                     "end_date":{
                         "@id": "http://schema.org/endDate",
                         "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+                    },
+                    "location":{
+                        "@id": "vocab:Event/Location",
+                        "@type": "@id"
+                    },
+                    "actor":{
+                        "@id": "vocab:Event/actor",
+                        "@type": "@id"
                     }
                 }
             }, 200, headers = hydra.LINK_HEADER)

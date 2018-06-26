@@ -61,17 +61,82 @@ for index, row in df.iterrows():
 location_ids = list(myDB.data["/locations"].keys())
 
 
+
+
+id = db.next_id()
+myDB.add_(id, "reviews", {
+  "@context": "/api/contexts/Review.jsonld",
+  "@type": "http://schema.org/Review",
+  "author": "Author 1",
+  "reviewBody": "review 1",
+  "@id": "http://localhost:5000/api/reviews/" + id
+})
+
+id = db.next_id()
+myDB.add_(id, "reviews", {
+  "@context": "/api/contexts/Review.jsonld",
+  "@type": "http://schema.org/Review",
+  "author": "Author 2",
+  "reviewBody": "review 2",
+  "@id": "http://localhost:5000/api/reviews/" + id
+})
+
 # ---------------------------------------------------------------------------------
 # Mock event resource
 
-test_entry = {
-    "name": "Halloween",
-    "description": "This is halloween, this is halloween",
-    "start_date": "2015-10-31T00:00:00Z",
-    "end_date": "2015-10-31T23:59:59Z"
-}
+author_ids = []
+for i in range(0, 10): 
+    id = db.next_id()
+    author_ids.append(id)
+    myDB.add_(id, "authors", {
+        "@context": "/api/contexts/Author.jsonld",
+        "@type": "http://schema.org/Author",
+        "familyName": "Musterman " + str(i),
+        "givenName": "Max" + str(i),
+        "email": "max.musterman.{}@hotmail.com".format(i),
+        "@id": "http://localhost:5000/api/authors/" + id
+    })
 
-myDB.add_("Event", test_entry)
+actor_ids = []
+for i in range(0, 10): 
+    id = db.next_id()
+    actor_ids.append(id)
+    myDB.add_(id, "actors", {
+        "@context": "/api/contexts/Actor.jsonld",
+        "@type": "http://schema.org/Author",
+        "familyName": "Musterman " + str(i),
+        "givenName": "Max" + str(i),
+        "email": "max.musterman.{}@hotmail.com".format(i),
+        "@id": "http://localhost:5000/api/actors/" + id
+    })
+
+for i in range(0, 10): 
+    id = db.next_id()
+    myDB.add_(id, "events", {
+    "@context": "/api/contexts/Event.jsonld",
+    "@type": "https://schema.org/Event",
+    "name": "a",
+    "actor": "/api/actor/def",
+    "location": "/api/location/abc",
+    "description": "Event for " + id,
+    "start_date": "e",
+    "end_date": "g",
+    "@id": "/api/events/" + id
+    })
+
+
+id = db.next_id()
+myDB.add_(id, "events", {
+  "@context": "/api/contexts/Event.jsonld",
+  "@type": "https://schema.org/Event",
+  "name": "a",
+  "actor": "/api/actor/def",
+  "location": "/api/location/abc",
+  "description": "Event for " + id,
+  "start_date": "e",
+  "end_date": "g",
+  "@id": "/api/events/" + id
+})
 
 
 for url in rss_event_feeds:

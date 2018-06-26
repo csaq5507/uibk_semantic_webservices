@@ -2,18 +2,23 @@ import crud
 import ctx
 import templates
 import json
-import hydra
+from . import hydra
 
 class EntryPoint(crud.CRUD):
     data = {}
     location = "/api"
 
     def getAll(self):
-        return ctx.success({
+        payload = {
                 "@context": "/api/contexts/EntryPoint.jsonld",
                 "@id": "/api/",
-                "@type": "EntryPoint",
-                "events": "/api/events/"
-            }, 200, headers = hydra.LINK_HEADER)
+                "@type": "EntryPoint"
+            }
+
+        for classObj in hydra.get_entrypoint_classes():
+            name = classObj.getEntryPointName()
+            payload[name] = classObj.resource_name + "/"
+
+        return ctx.success(payload, 200, headers = hydra.LINK_HEADER)
 
 crud.register_dynamic(lambda: EntryPoint())

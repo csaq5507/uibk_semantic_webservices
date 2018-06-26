@@ -95,7 +95,7 @@ class Database:
 
     def get_(self, name, id):        
         if name not in self.data:
-            return ctx.error("Entry not found", 1, 404)
+            return ctx.error("Entry '{}' not found for resource '{}'".format(id, name), 1, 404)
 
         if id not in self.data[name]:
             return ctx.error("Entry not found", 1, 404)
@@ -112,20 +112,12 @@ class Database:
         del self.data[name][id]
         return None
 
-    def add_(self, name, entry):
+    def add_(self, entry_id, name, entry):
         if name not in self.data:
             self.data[name] = {}
 
-        id = next_id()
-        if id in self.data[name]:
-            return ctx.error("Entry already exists", 1, 400)
-            
-        entry["@context"] =  "/api/contexts/{}.jsonld".format(name)
-        entry["@id"] =  "/api/events/{}".format(id)
-        entry["@type"] =  name
-
-        self.data[name][id] = entry
-        return id
+        self.data[name][entry_id] = entry
+        return entry
 
     def replace_(self, name, id, entry):        
         if name not in self.data:

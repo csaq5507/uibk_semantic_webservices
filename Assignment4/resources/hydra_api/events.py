@@ -31,9 +31,15 @@ class Events(crud.CRUD):
         return ctx.success({}, 200, headers = hydra.LINK_HEADER)
 
     def post(self, data):
-        id = myDB.add_("Event", data)
-        if isinstance(id, Response):
-            return id
+            
+        id = db.next_id()    
+        data["@context"] =  "/api/contexts/Event.jsonld"
+        data["@id"] =  "/api/events/{}".format(id)
+        data["@type"] =  "https://schema.org/Event"
+
+        result = myDB.add_(id, "Event", data)
+        if isinstance(result, Response):
+            return result
 
         event_url = "{}/api/events/{}".format(ctx.base_url, id)
         headers = hydra.LINK_HEADER
@@ -47,7 +53,7 @@ class Events(crud.CRUD):
             return event
         return ctx.success(event, 200, headers = hydra.LINK_HEADER)
 
-    def put(self, data, id):
+    def patch(self, data, id):
         event = myDB.update_("Event", id, data)
         if type(event) is Response:
             return event

@@ -5,5 +5,13 @@
     "name": "Halloween",
     "description": "This is halloween, this is halloween",
     "start_date": "2015-10-31T00:00:00Z",
-    "end_date": "2015-10-31T23:59:59Z"
+    "end_date": "2015-10-31T23:59:59Z",
+    "location": {
+        "@id": "/api/location/139",
+        "@type": "http://schema.org/Place"
+    },
+    "actor": {
+        "@id": "/api/location/139",
+        "@type": "http://schema.org/Place"
+    }
 }
