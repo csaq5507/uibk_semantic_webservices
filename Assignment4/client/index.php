@@ -1,9 +1,21 @@
 <html>
 <head>
     <title>Hydra Api Client</title>
+    <script type="text/javascript">
+        function updateURL(url){
+            var elems = document.getElementsByName("url");
+            for(var i=0; i<elems.length;i++)
+            {
+                if(url.indexOf("http") == -1)
+                    elems[i].value="http://localhost:5000"+url;
+                else
+                    elems[i].value=url;
+
+            }
+        }
+    </script>
 </head>
 <body>
-
 
 
 <?php
@@ -25,6 +37,19 @@ $entry_point = "/api";
 
 $url = null;
 $vocab = null;
+
+
+function is_url($url)
+{
+    $base_url = "http://localhost:5000";
+
+    if(filter_var($base_url.$url,FILTER_VALIDATE_URL))
+        return true;
+    else if(filter_var($url,FILTER_VALIDATE_URL))
+        return true;
+    else return false;
+
+}
 
 if(isset($_POST["met"]) && isset($_POST["url"]))
 {
@@ -50,46 +75,23 @@ if(isset($_POST["met"]) && isset($_POST["url"]))
         $r->execute();
         if ($r->getHttpCode() == 200) {
             $result = json_decode($r->getResponse());
-            if($result->{"@type"} == "EntryPoint")
-            {
-                $url = $result->{"events"};
-                ?>
-                <script type="text/javascript">
-                    document.getElementsByTagName("body")[0].onload = function() {
-                        document.getElementById("class_picker").selectedIndex = 3;
-                        makeVisible(document.getElementById("class_picker"));
-                    }
-
-                </script>
-                <?php
-            } else if($result->{"@type"}=="EventCollection")
-            {
+            if(property_exists($result,"members")) {
                 $events=$result->{"members"};
-                ?>
-                <script type="text/javascript">
-                    function updateURL(url){
-                        var elems = document.getElementsByName("url");
-                        document.getElementById("class_picker").selectedIndex=1;
-                        makeVisible(document.getElementById("class_picker"));
-                        for(var i=0; i<elems.length;i++)
-                        {
-                            elems[i].value="<?php echo $base_url; ?>"+url;
-                        }
-                    }
-                </script>
+                echo "Response:<br><br>";
 
+                ?>
                 <table>
                     <tr>
                 <?php
                 for($i=0;$i<count($events);$i++)
                 {
-                                        $ev = (array) $events[$i];
+                    $ev = (array) $events[$i];
                     echo "<td>";
                     foreach ($ev as $p_name=>$p_value)
                     {
-                        if($p_name=="@id") {
+                        if(is_url($p_value)) {
                             ?>
-                            <a href="javascript:updateURL('<?php echo $p_value; ?>')"><?php echo $p_value; ?></a><br>
+                            <?php echo $p_name; ?>: <a href="javascript:updateURL('<?php echo $p_value; ?>')"><?php echo $p_value; ?></a><br>
                             <?php
                         } else
                                 echo "$p_name: $p_value<br>";
@@ -103,9 +105,19 @@ if(isset($_POST["met"]) && isset($_POST["url"]))
                     </tr>
                 </table>
                 <?php
-            } else if($result->{"@type"}=="Event")
-            {
+            } else {
+                $ev = (array) $result;
+                echo "Response:<br><br>";
+                foreach ($ev as $p_name=>$p_value)
+                {
+                    if(is_url($p_value)) {
+                        ?>
+                    <?php echo $p_name; ?>: <a href="javascript:updateURL('<?php echo $p_value; ?>')"><?php echo $p_value; ?></a><br>
+                    <?php
+                    } else
+                        echo "$p_name: $p_value<br>";
 
+                }
             }
         } else if($r->getHttpCode() == 201)
         {
@@ -114,11 +126,13 @@ if(isset($_POST["met"]) && isset($_POST["url"]))
 
 
                 $ev = (array) $result;
-                foreach ($ev as $p_name=>$p_value)
+            echo "Response:<br><br>";
+
+            foreach ($ev as $p_name=>$p_value)
                 {
-                    if($p_name=="@id") {
+                    if(is_url($p_value)) {
                         ?>
-                        <a href="javascript:updateURL('<?php echo $p_value; ?>')"><?php echo $p_value; ?></a><br>
+                        <?php echo $p_name; ?>: <a href="javascript:updateURL('<?php echo $p_value; ?>')"><?php echo $p_value; ?></a><br>
                         <?php
                 } else
                     echo "$p_name: $p_value<br>";
@@ -144,9 +158,7 @@ try {
     if ($r->getHttpCode() == 200) {
         $result = get_object_vars(json_decode($r->getResponse()));
         $headers = $r->getHeader();
-        echo json_encode($headers);
-        echo json_encode($headers);
-        
+        //$link = $headers["link"];
         $vocab = "http://localhost:5000/api/vocab"; //TODO cant get vocab from server!!!
     } else
         echo "Api not reachable. ".$r->getHttpCode();
@@ -160,7 +172,7 @@ try {
     $r1->execute();
     if ($r1->getHttpCode() == 200) {
         $result = json_decode($r1->getResponse());
-        echo "Vocab found.<br>";
+        echo "<br>Action:<br>";
         $support=$result->{"supportedClass"};
         ?>
         <script type="text/javascript">
@@ -189,6 +201,7 @@ try {
             ?>
         </select>
         <?php
+
         for($i = 0; $i< count($support);$i++)
         {
             $ops = $support[$i]->{"supportedOperation"};
@@ -207,7 +220,8 @@ try {
                     <option value="">Please Select...</option>
                     <?php
                     for($j=0;$j<count($ops);$j++) {
-                        echo "<option value='".$ops[$j]->{"@id"}."'>". $ops[$j]->{"label"}."</option>";
+                        $method = $ops[$j]->{"method"};
+                        echo "<option value='".$ops[$j]->{"@id"}."'>". $ops[$j]->{"label"}." [$method]</option>";
                     }
                     ?>
                 </select>
@@ -221,9 +235,9 @@ try {
                         ?>
                         <form method='POST'>
                             <label for'url'>URL: </label>
-                            <input type='text' name='url' value='<?php echo $base_url.$url; ?>'><br>
+                            <input type='text' name='url' style="width: 500px;" value='<?php echo $base_url.$url; ?>'><br>
                             <label for'met'>Method: </label>
-                            <input type='text' name='met' value='<?php echo $ops[$j]->{"method"}; ?>'><br>
+                            <input type='text' name='met' style="width: 50px;" value='<?php echo $ops[$j]->{"method"}; ?>'><br>
                             <input type='submit' value='Go' >
                         </form>
                         <?php
@@ -243,9 +257,9 @@ try {
                             ?>
                             <form method='POST'>
                                 <label for'url'>URL: </label>
-                                <input type='text' name='url' value='<?php echo $base_url.$url; ?>'><br>
+                                <input type='text' name='url' style="width: 500px;" value='<?php echo $base_url.$url; ?>'><br>
                                 <label for'met'>Method: </label>
-                                <input type='text' name='met' value='<?php echo $ops[$j]->{"method"}; ?>'><br>
+                                <input type='text' name='met' style="width: 50px;" value='<?php echo $ops[$j]->{"method"}; ?>'><br>
                                 <?php
                                 for($l=0;$l<count($class->{"supportedProperty"});$l++)
                                 {

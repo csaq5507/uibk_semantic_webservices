@@ -18,7 +18,6 @@
  * @version 1.0-beta1
  * @author Jeff Geerling (geerlingguy).
  */
-
 namespace JJG;
 class Request {
     // You can set the address when creating the Request object, or using the
@@ -240,7 +239,6 @@ class Request {
         }
         return FALSE;
     }
-
     /**
      * Check a given address with cURL.
      *
@@ -286,12 +284,8 @@ class Request {
         curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
         // Output the header in the response.
         curl_setopt($ch, CURLOPT_HEADER, TRUE);
-        
-
-        
         $response = curl_exec($ch);
         $error = curl_error($ch);
-
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $time = curl_getinfo($ch, CURLINFO_TOTAL_TIME);
