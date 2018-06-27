@@ -37,6 +37,7 @@ $entry_point = "/api";
 
 $url = null;
 $vocab = null;
+$link = false;
 
 
 function is_url($url)
@@ -90,6 +91,7 @@ if(isset($_POST["met"]) && isset($_POST["url"]))
                     foreach ($ev as $p_name=>$p_value)
                     {
                         if(is_url($p_value)) {
+                            $link = true;
                             ?>
                             <?php echo $p_name; ?>: <a href="javascript:updateURL('<?php echo $p_value; ?>')"><?php echo $p_value; ?></a><br>
                             <?php
@@ -111,6 +113,7 @@ if(isset($_POST["met"]) && isset($_POST["url"]))
                 foreach ($ev as $p_name=>$p_value)
                 {
                     if(is_url($p_value)) {
+                        $link = true;
                         ?>
                     <?php echo $p_name; ?>: <a href="javascript:updateURL('<?php echo $p_value; ?>')"><?php echo $p_value; ?></a><br>
                     <?php
@@ -131,6 +134,7 @@ if(isset($_POST["met"]) && isset($_POST["url"]))
             foreach ($ev as $p_name=>$p_value)
                 {
                     if(is_url($p_value)) {
+                        $link = true;
                         ?>
                         <?php echo $p_name; ?>: <a href="javascript:updateURL('<?php echo $p_value; ?>')"><?php echo $p_value; ?></a><br>
                         <?php
@@ -172,7 +176,9 @@ try {
     $r1->execute();
     if ($r1->getHttpCode() == 200) {
         $result = json_decode($r1->getResponse());
-        echo "<br>Action:<br>";
+        if($link)
+            echo "<h3>First select an Action, then click on the corresponding link</h3>";
+        echo "<h1>Action:</h1>";
         $support=$result->{"supportedClass"};
         ?>
         <script type="text/javascript">
