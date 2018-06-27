@@ -43,7 +43,11 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "http://schema.org/population"
+        id = "vocab:Location/population",
+        label = "population",
+        desc = "population of the City",
+        domain="vocab:Location",
+        range="http://www.w3.org/2001/XMLSchema#positiveInteger"
     )
 ))
 properties.append(HydraProperty(
@@ -53,7 +57,11 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "http://schema.org/State"
+        id = "vocab:Location/state",
+        label = "state",
+        desc = "state",
+        domain="vocab:Location",
+        range="http://www.w3.org/2001/XMLSchema#string"
     )
 ))
 properties.append(HydraProperty(
@@ -63,7 +71,11 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "http://schema.org/longitude"
+        id = "vocab:Location/longitude",
+        label = "longitude",
+        desc = "longitude",
+        domain="vocab:Location",
+        range="http://www.w3.org/2001/XMLSchema#float"
     )
 ))
 properties.append(HydraProperty(
@@ -73,11 +85,15 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "http://schema.org/latitude"
+        id = "vocab:Location/latitude",
+        label = "latitude",
+        desc = "latitude",
+        domain="vocab:Location",
+        range="http://www.w3.org/2001/XMLSchema#float"
     )
 ))
 
-collection_factory.create_collection_entry(
+location_class = collection_factory.create_collection_entry(
     type_id = "http://schema.org/PostalAddress"
     , label = "Location"
     , description = "A Location for a event"

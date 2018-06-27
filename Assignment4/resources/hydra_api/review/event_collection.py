@@ -1,6 +1,7 @@
 from .. import collection_factory
 from .. import hydra
 from . import actor_collection
+from . import location_collection
 from ..supportedProperty import HydraProperty, HydraPropertyInfo
 
 collection_factory.create_collection(
@@ -25,7 +26,7 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "vocab:Issue/name",
+        id = "vocab:Event/name",
         label = "name",
         desc = "Name of the event",
         domain="vocab:Event",
@@ -41,7 +42,7 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "vocab:Issue/actor",
+        id = "vocab:Event/actor",
         label = "actor",
         desc = "Actor for this event",
         domain="vocab:Event",
@@ -57,11 +58,12 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "vocab:Issue/location",
+        id = "vocab:Event/location",
         label = "location",
         desc = "Location where the event takes place",
         domain="vocab:Event",
-        range="vocab:Location"
+        range="vocab:Location",
+        supportedOperations = location_collection.location_class.getOperations()
     )
 ))
 
@@ -72,7 +74,7 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "vocab:Issue/description",
+        id = "vocab:Event/description",
         label = "name",
         desc = "Event description",
         domain="vocab:Event",
@@ -87,7 +89,7 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "vocab:Issue/start_date",
+        id = "vocab:Event/start_date",
         label = "start_date",
         desc = "Date when the event starts",
         domain="vocab:Event",
@@ -102,7 +104,7 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "vocab:Issue/end_date",
+        id = "vocab:Event/end_date",
         label = "end_date",
         desc = "Date when the event ends",
         domain="vocab:Event",

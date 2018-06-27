@@ -125,10 +125,6 @@ class Database:
 
         if id not in self.data[name]:
             return ctx.error("Entry not found", 1, 404)
-            
-        entry["@context"] =  "/api/contexts/{}.jsonld".format(name)
-        entry["@id"] =  "/api/events/{}".format(id)
-        entry["@type"] =  name
 
         self.data[name][id] = entry
 
