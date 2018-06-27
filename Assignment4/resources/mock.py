@@ -13,6 +13,9 @@ myDB = db.db
 # ---------------------------------------------------------------------------------
 # utils to generate random dates in future
 
+def get_random_item(items):
+    return items[randrange(0, len(items)- 1)]
+
 def random_date(start, end):
     delta = end - start
     int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
@@ -34,7 +37,7 @@ rss_event_feeds = [
     ]
 
 url = 'cities.csv'
-df = pd.read_csv(url, parse_dates=True, delimiter=",", decimal=",")
+cities_df = pd.read_csv(url, parse_dates=True, delimiter=",", decimal=",")
 
 
 # ---------------------------------------------------------------------------------
@@ -45,21 +48,25 @@ myDB.data["/events"] = {}
 myDB.data["/authors"] = {}
 
 
+
 # ---------------------------------------------------------------------------------
 # Mock location resource
 
-for index, row in df.iterrows():
-    myDB.data["/locations"][db.next_id()] = { 
-            "name": row["city"],  
-            "lat": row["lat"],
-            "lng": row["lng"],
-            "pop": row["pop"],
-            "country": row["country"],
-            "province": row["province"]
-        }
-
-location_ids = list(myDB.data["/locations"].keys())
-
+location_ids = []
+for index, row in cities_df.iterrows():
+    id = db.next_id()
+    location_ids.append(id)
+    myDB.add_(id, "locations", {
+        "@context": "/api/contexts/Location.jsonld",
+        "@type": "http://schema.org/City",
+        "name": row["city"],  
+        "latitude": row["lat"],
+        "longitude": row["lng"],
+        "population": row["pop"],
+        "countryAddress": row["country"],
+        "state": row["province"],
+        "@id": "http://localhost:5000/api/locations/{}".format(id)
+    })
 
 
 
@@ -94,7 +101,7 @@ for i in range(0, 10):
         "familyName": "Musterman " + str(i),
         "givenName": "Max" + str(i),
         "email": "max.musterman.{}@hotmail.com".format(i),
-        "@id": "http://localhost:5000/api/authors/" + id
+        "@id": "http://localhost:5000/api/authors/" + str(id)
     })
 
 actor_ids = []
@@ -103,40 +110,60 @@ for i in range(0, 10):
     actor_ids.append(id)
     myDB.add_(id, "actors", {
         "@context": "/api/contexts/Actor.jsonld",
-        "@type": "http://schema.org/Author",
+        "@type": "http://schema.org/Actor",
         "familyName": "Musterman " + str(i),
         "givenName": "Max" + str(i),
-        "email": "max.musterman.{}@hotmail.com".format(i),
-        "@id": "http://localhost:5000/api/actors/" + id
+        "gender": "male",
+        "birthDate": "01.02.2003",
+        "@id": "http://localhost:5000/api/actors/" + str(id)
     })
 
+event_ids = []
 for i in range(0, 10): 
     id = db.next_id()
+    event_ids.append(id)
     myDB.add_(id, "events", {
     "@context": "/api/contexts/Event.jsonld",
     "@type": "https://schema.org/Event",
-    "name": "a",
-    "actor": "/api/actor/def",
-    "location": "/api/location/abc",
-    "description": "Event for " + id,
-    "start_date": "e",
-    "end_date": "g",
-    "@id": "/api/events/" + id
+    "name": "Event {}".format(id),
+    "actor": "/api/actors/{}".format(random.choice(actor_ids)),
+    "location": "/api/locations/{}".format(random.choice(location_ids)),
+    "description": "Event for {}".format(id),
+    "start_date": get_next_rnd_date(),
+    "end_date": get_next_rnd_date(),
+    "@id": "/api/events/{}".format(id)
     })
 
 
-id = db.next_id()
-myDB.add_(id, "events", {
-  "@context": "/api/contexts/Event.jsonld",
-  "@type": "https://schema.org/Event",
-  "name": "a",
-  "actor": "/api/actor/def",
-  "location": "/api/location/abc",
-  "description": "Event for " + id,
-  "start_date": "e",
-  "end_date": "g",
-  "@id": "/api/events/" + id
-})
+review_ids = []
+for i in range(0, 10): 
+    id = db.next_id()
+    review_ids.append(id)
+    myDB.add_(id, "reviews", {
+        "@context": "/api/contexts/Review.jsonld",
+        "@type": "http://schema.org/Review",
+        "reviewBody": "Review number " + str(i),
+        "itemReviewed": "/api/events/{}".format(random.choice(event_ids)),
+        "@id": "http://localhost:5000/api/reviews/" + str(id)
+    })
+
+rating_ids = []
+for i in range(0, 10): 
+    id = db.next_id()
+    review_ids.append(id)
+    myDB.add_(id, "ratings", {
+        "@context": "/api/contexts/Rating.jsonld",
+        "@type": "http://schema.org/Rating",
+        "author": "/api/authors/{}".format(random.choice(author_ids)),
+        "ratingValue": random.choice([0,1,2,3,4,5]),
+        "itemRated": "/api/events/{}".format(random.choice(event_ids)),
+        "@id": "http://localhost:5000/api/ratings/" + str(id)
+    })
+
+
+
+
+
 
 
 for url in rss_event_feeds:
@@ -192,28 +219,3 @@ for url in rss_event_feeds:
             "link": entry["link"],
             "self": "{}/{}/{}".format(ctx.base_url, "events", event_id) 
         }
-
-
-# ---------------------------------------------------------------------------------
-# Entry-Points (index)
-
-myDB.data["/"] = {}
-for resource in manager.get_all_resources():
-    id = resource.strip("/")
-    if not id:
-        continue
-
-    myDB.data["/"][id] = {
-            "name": id,
-            "self": "{}{}".format(ctx.base_url, resource) 
-        }
-
-
-myDB.data["/api"] = {
-  "@context": "/hydra/api-demo/contexts/EntryPoint.jsonld",
-  "@id": "/hydra/api-demo/",
-  "@type": "EntryPoint",
-  "issues": "/hydra/api-demo/isssssssssssssssssssues/",
-  "register_user": "/hydra/api-demo/users/",
-  "users": "/hydra/api-demo/users/"
-}

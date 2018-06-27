@@ -11,12 +11,19 @@ collection_factory.create_collection(
     , end_point = "locations"
     , entry_point_name = "locations"
     , entry_context_name = "Location"
-    , expects_type = "http://schema.org/PostalAddress"
-    , returns_type = "http://schema.org/PostalAddress"
+    , expects_type = "http://schema.org/City"
+    , returns_type = "http://schema.org/City"
 )
 
-
 properties = []
+properties.append(HydraProperty(
+    property = "https://schema.org/name",
+    title ="name",
+    desc = "Name of the city",
+    required = True,
+    readonly = False,
+    writeonly = False
+))
 properties.append(HydraProperty(
     property = "http://schema.org/addressCountry",
     title ="addressCountry",
@@ -26,17 +33,33 @@ properties.append(HydraProperty(
     writeonly = False
 ))
 properties.append(HydraProperty(
-    property = "http://schema.org/postalCode",
-    title ="postalCode",
-    desc = "The postal code. For example, 94043.",
+    property = "https://schema.org/Population",
+    title ="population",
+    desc = "City population",
     required = True,
     readonly = False,
     writeonly = False
 ))
 properties.append(HydraProperty(
-    property = "http://schema.org/streetAddress",
-    title ="streetAddress",
-    desc = "he street address. For example, 1600 Amphitheatre Pkwy.",
+    property = "https://schema.org/State",
+    title ="state",
+    desc = "A state or province of a country.",
+    required = True,
+    readonly = False,
+    writeonly = False
+))
+properties.append(HydraProperty(
+    property = "https://schema.org/longitude",
+    title ="longitude",
+    desc = "Geo coord. latitude longitude",
+    required = True,
+    readonly = False,
+    writeonly = False
+))
+properties.append(HydraProperty(
+    property = "https://schema.org/latitude",
+    title ="latitude",
+    desc = "Geo coord. latitude",
     required = True,
     readonly = False,
     writeonly = False
