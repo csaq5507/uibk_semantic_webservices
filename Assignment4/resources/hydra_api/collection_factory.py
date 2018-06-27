@@ -19,8 +19,30 @@ def generic_entry_get_action(id, entry_context, entry_id, entry_type, db_name):
     result = myDB.get_(db_name, id)
     if type(result) is Response:
         return result
-        
     return ctx.success(result, 200, headers = hydra.LINK_HEADER)
+
+def generic_entry_delete_action(id, entry_context, entry_id, entry_type, db_name):
+    result = myDB.delete_(db_name, id)
+    if type(result) is Response:
+        return result
+    return ctx.success(result, 200, headers = hydra.LINK_HEADER)
+
+def generic_entry_replace_action(data, id, entry_context, entry_id, entry_type, db_name):
+    current_id = db.next_id()
+
+    entry_url = "{}{}".format(ctx.base_url, entry_id.replace("<id>", current_id))
+    data["@context"] = entry_context
+    data["@id"] = entry_url
+    data["@type"] = entry_type
+
+    result = myDB.replace_(db_name, current_id, data)
+    if isinstance(result, Response):
+        return result
+
+    headers = hydra.LINK_HEADER
+    headers["location"] = entry_url
+    headers["content-location"] = entry_url
+    return ctx.success(data, 201, headers=headers)
 
 def generic_collection_get_action(collection_context, collection_id, collection_type, db_name):
     result = myDB.getAll_(db_name)
@@ -47,7 +69,6 @@ def generic_post_action(data, entry_context, entry_id, entry_type, db_name):
     data["@id"] = entry_url
     data["@type"] = entry_type
 
-
     result = myDB.add_(current_id, db_name, data)
     if isinstance(result, Response):
         return result
@@ -70,6 +91,27 @@ def post_action(data, operationObj):
 def get_entry_action(id, operationObj):
     userData = operationObj.hydraClass.userData
     return generic_entry_get_action(
+        id,
+        userData["entry_@context"],
+        userData["entry_@id"],
+        userData["entry_@type"],
+        userData["entry_@db_name"]
+    )
+
+def delete_entry_action(id, operationObj):
+    userData = operationObj.hydraClass.userData
+    return generic_entry_delete_action(
+        id,
+        userData["entry_@context"],
+        userData["entry_@id"],
+        userData["entry_@type"],
+        userData["entry_@db_name"]
+    )
+
+def replace_entry_action(data, id,operationObj):
+    userData = operationObj.hydraClass.userData
+    return generic_entry_replace_action(
+        data,
         id,
         userData["entry_@context"],
         userData["entry_@id"],
@@ -121,6 +163,26 @@ def create_collection_entry(
         expects = None, 
         returns = type_id,
         operation = get_entry_action
+    ))
+
+    classObject.addOperation(HydraOperation(
+        id = "_:{}_remove".format(operation_prefix), 
+        type = "hydra:Operation", 
+        method = "DELETE", 
+        label = "Deletes an entity", 
+        expects = None, 
+        returns = "http://www.w3.org/2002/07/owl#Nothing",
+        operation = delete_entry_action
+    ))
+
+    classObject.addOperation(HydraOperation(
+        id = "_:{}_replace".format(operation_prefix), 
+        type = "hydra:Operation", 
+        method = "PUT", 
+        label = "Replaces an entity", 
+        expects = type_id, 
+        returns = type_id,
+        operation = replace_entry_action
     ))
 
     classObject.setContextName(label)
