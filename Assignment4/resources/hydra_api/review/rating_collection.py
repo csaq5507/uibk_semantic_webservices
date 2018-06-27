@@ -1,5 +1,5 @@
 from .. import collection_factory
-from ..supportedProperty import HydraProperty
+from ..supportedProperty import HydraProperty, HydraPropertyInfo
 
 collection_factory.create_collection(
       type_id = "vocab:RatingCollection"
@@ -17,28 +17,34 @@ collection_factory.create_collection(
 
 properties = []
 properties.append(HydraProperty(
-    property = "http://schema.org/ratingValue",
     title ="ratingValue",
     desc = "Rating value",
     required = True,
     readonly = False,
-    writeonly = False
+    writeonly = False,
+    property = HydraPropertyInfo(
+        id = "http://schema.org/ratingValue"
+    )
 ))
 properties.append(HydraProperty(
-    property = "http://schema.org/itemRated",
     title ="itemRated",
     desc = "Event id",
     required = True,
     readonly = False,
-    writeonly = False
+    writeonly = False,
+    property = HydraPropertyInfo(
+        id = "http://schema.org/itemRated"
+    )
 ))
 properties.append(HydraProperty(
-    property = "http://schema.org/author",
     title ="author",
     desc = "Author id",
     required = True,
     readonly = False,
-    writeonly = False
+    writeonly = False,
+    property = HydraPropertyInfo(
+        id = "http://schema.org/author"
+    )
 ))
 
 custom_context = {

@@ -35,7 +35,7 @@ class Events(crud.CRUD):
         id = db.next_id()    
         data["@context"] =  "/api/contexts/Event.jsonld"
         data["@id"] =  "/api/events/{}".format(id)
-        data["@type"] =  "https://schema.org/Event"
+        data["@type"] =  "http://schema.org/Event"
 
         result = myDB.add_(id, "Event", data)
         if isinstance(result, Response):

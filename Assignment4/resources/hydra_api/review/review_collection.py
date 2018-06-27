@@ -1,5 +1,5 @@
 from .. import collection_factory
-from ..supportedProperty import HydraProperty
+from ..supportedProperty import HydraProperty, HydraPropertyInfo
 
 collection_factory.create_collection(
       type_id = "vocab:ReviewCollection"
@@ -17,28 +17,34 @@ collection_factory.create_collection(
 
 properties = []
 properties.append(HydraProperty(
-    property = "http://schema.org/reviewBody",
     title ="reviewBody",
     desc = "Review content",
     required = True,
     readonly = False,
-    writeonly = False
+    writeonly = False,
+    property = HydraPropertyInfo(
+        id = "http://schema.org/reviewBody"
+    )
 ))
 properties.append(HydraProperty(
-    property = "http://schema.org/itemReviewed",
     title ="itemReviewed",
     desc = "Event id",
     required = True,
     readonly = False,
-    writeonly = False
+    writeonly = False,
+    property = HydraPropertyInfo(
+        id = "http://schema.org/itemReviewed"
+    )
 ))
 properties.append(HydraProperty(
-    property = "http://schema.org/author",
     title ="author",
     desc = "Author id",
     required = True,
     readonly = False,
-    writeonly = False
+    writeonly = False,
+    property = HydraPropertyInfo(
+        id = "http://schema.org/author"
+    )
 ))
 
 

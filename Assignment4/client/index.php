@@ -5,6 +5,7 @@
 <body>
 
 
+
 <?php
 /**
  *
@@ -143,7 +144,9 @@ try {
     if ($r->getHttpCode() == 200) {
         $result = get_object_vars(json_decode($r->getResponse()));
         $headers = $r->getHeader();
-        //$link = $headers["link"];
+        echo json_encode($headers);
+        echo json_encode($headers);
+        
         $vocab = "http://localhost:5000/api/vocab"; //TODO cant get vocab from server!!!
     } else
         echo "Api not reachable. ".$r->getHttpCode();

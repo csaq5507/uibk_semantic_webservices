@@ -25,7 +25,7 @@ def random_date(start, end):
 def get_next_rnd_date():
     d1 = datetime.strptime('1/1/2018 1:30 PM', '%m/%d/%Y %I:%M %p')
     d2 = datetime.strptime('1/1/2019 4:50 AM', '%m/%d/%Y %I:%M %p')
-    return random_date(d1, d2)
+    return str(random_date(d1, d2))
 
 
 # ---------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ def get_next_rnd_date():
 
 rss_event_feeds = [
     #"http://www.brixn.at/feed/",
-    #"https://www.events-magazin.de/feed/"
+    #"http:/www.events-magazin.de/feed/"
     ]
 
 url = 'cities.csv'
@@ -124,7 +124,7 @@ for i in range(0, 10):
     event_ids.append(id)
     myDB.add_(id, "events", {
     "@context": "/api/contexts/Event.jsonld",
-    "@type": "https://schema.org/Event",
+    "@type": "http://schema.org/Event",
     "name": "Event {}".format(id),
     "actor": "/api/actors/{}".format(random.choice(actor_ids)),
     "location": "/api/locations/{}".format(random.choice(location_ids)),

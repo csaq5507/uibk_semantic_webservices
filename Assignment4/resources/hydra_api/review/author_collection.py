@@ -1,9 +1,9 @@
 from .. import collection_factory
-from ..supportedProperty import HydraProperty
+from ..supportedProperty import HydraProperty, HydraPropertyInfo
 
 
 
-collection_factory.create_collection(
+author_class = collection_factory.create_collection(
       type_id = "vocab:AuthorCollection"
     , label = "AuthorCollection"
     , description = "A collection of authors"
@@ -19,28 +19,34 @@ collection_factory.create_collection(
 
 properties = []
 properties.append(HydraProperty(
-    property = "http://schema.org/familyName",
     title ="familyName",
     desc = "Family name of the author",
     required = True,
     readonly = False,
-    writeonly = False
+    writeonly = False,
+    property = HydraPropertyInfo(
+        id = "http://schema.org/familyName"
+    )
 ))
 properties.append(HydraProperty(
-    property = "http://schema.org/givenName",
     title ="givenName",
     desc = "First name of the author",
     required = True,
     readonly = False,
-    writeonly = False
+    writeonly = False,
+    property = HydraPropertyInfo(
+        id = "http://schema.org/givenName"
+    )
 ))
 properties.append(HydraProperty(
-    property = "http://schema.org/email",
     title ="email",
     desc = "email of the author",
     required = True,
     readonly = False,
-    writeonly = False
+    writeonly = False,
+    property = HydraPropertyInfo(
+        id = "http://schema.org/email"
+    )
 ))
 
 collection_factory.create_collection_entry(

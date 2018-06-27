@@ -29,7 +29,7 @@ def generic_collection_get_action(collection_context, collection_id, collection_
 
     final_results = []
     for row in result:
-        final_results.append( {"@id": row["@id"]})
+        final_results.append( {"@id": row["@id"], "@type": row["@type"]})
 
     collectionData = {
         "@context": collection_context,
@@ -123,20 +123,21 @@ def create_collection_entry(
         operation = get_entry_action
     ))
 
-
-
     classObject.setContextName(label)
+  
+    for prop in properties:
+        classObject.addProperty(prop)
 
     if not custom_context:
         class_context = { hydra_title: type_id }    
         for prop in properties:
             class_context[prop.data["hydra:title"]] = prop.data["property"]
-            classObject.addProperty(prop)
         classObject.setContext(class_context)
     else:
         classObject.setContext(custom_context)
 
     hydra.register_class(classObject)
+    return classObject
 
 
 def create_collection(

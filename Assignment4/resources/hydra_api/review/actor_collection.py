@@ -1,5 +1,5 @@
 from .. import collection_factory
-from ..supportedProperty import HydraProperty
+from ..supportedProperty import HydraProperty, HydraPropertyInfo
 
 collection_factory.create_collection(
       type_id = "vocab:ActorCollection"
@@ -35,7 +35,7 @@ properties.append(HydraProperty(
 ))
 
 properties.append(HydraProperty(
-        property = "https://schema.org/gender",
+        property = "http://schema.org/gender",
         title ="Gender",
         desc = "The actors's gender",
         required = False,
@@ -44,7 +44,7 @@ properties.append(HydraProperty(
 ))
 
 properties.append(HydraProperty(
-        property = "https://schema.org/birthDate",
+        property = "http://schema.org/birthDate",
         title ="birthDate",
         desc = "The actors's birth date",
         required = False,
@@ -52,7 +52,7 @@ properties.append(HydraProperty(
         writeonly = False
 ))
 
-collection_factory.create_collection_entry(
+actor_class = collection_factory.create_collection_entry(
     type_id = "http://schema.org/Actor"
     , label = "Actor"
     , description = "A actor for a event"
