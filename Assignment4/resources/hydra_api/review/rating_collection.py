@@ -23,7 +23,11 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "http://schema.org/ratingValue"
+        id = "vocab:Rating/ratingValue",
+        label = "ratingValue",
+        desc = "Rating value of the event",
+        domain="vocab:Rating",
+        range="http://www.w3.org/2001/XMLSchema#positiveInteger"
     )
 ))
 properties.append(HydraProperty(
@@ -33,7 +37,11 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "http://schema.org/itemRated"
+        id = "vocab:Rating/itemRated",
+        label = "ratingValue",
+        desc = "Rated event",
+        domain="vocab:Rating",
+        range="vocab:Event"
     )
 ))
 properties.append(HydraProperty(
@@ -43,7 +51,11 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "http://schema.org/author"
+        id = "vocab:Rating/author",
+        label = "author",
+        desc = "Auhtor for this rating",
+        domain="vocab:Rating",
+        range="http://www.w3.org/2001/XMLSchema#string"
     )
 ))
 

@@ -32,8 +32,8 @@ def get_next_rnd_date():
 # Load data from rss feeds
 
 rss_event_feeds = [
-    #"http://www.brixn.at/feed/",
-    #"http:/www.events-magazin.de/feed/"
+    "http://www.brixn.at/feed/",
+    "http:/www.events-magazin.de/feed/"
     ]
 
 url = 'cities.csv'
@@ -52,8 +52,10 @@ myDB.data["/authors"] = {}
 # ---------------------------------------------------------------------------------
 # Mock location resource
 
+location_entries = [(index, row) for index, row in cities_df.iterrows()]
+
 location_ids = []
-for index, row in cities_df.iterrows():
+for index, row in location_entries[:10]:
     id = db.next_id()
     location_ids.append(id)
     myDB.add_(id, "locations", {
@@ -119,20 +121,34 @@ for i in range(0, 10):
     })
 
 event_ids = []
-for i in range(0, 10): 
-    id = db.next_id()
-    event_ids.append(id)
-    myDB.add_(id, "events", {
-    "@context": "/api/contexts/Event.jsonld",
-    "@type": "http://schema.org/Event",
-    "name": "Event {}".format(id),
-    "actor": "/api/actors/{}".format(random.choice(actor_ids)),
-    "location": "/api/locations/{}".format(random.choice(location_ids)),
-    "description": "Event for {}".format(id),
-    "start_date": get_next_rnd_date(),
-    "end_date": get_next_rnd_date(),
-    "@id": "/api/events/{}".format(id)
-    })
+for url in rss_event_feeds:
+    feed = feedparser.parse(url)
+    for entry in feed[ "items" ]:   
+       
+        # ---------------------------------------------------------------------------------
+        # add authors from feed to db
+
+        categories = [t.term for t in entry.get('tags', [])]
+
+        event_id = db.next_id()
+        event_ids.append(event_id)
+
+        event_title = entry["title"]
+        event_desc =  entry["description"]
+
+        event_entry = {
+            "@context": "/api/contexts/Event.jsonld",
+            "@type": "http://schema.org/Event",
+            "name": event_title,
+            "actor": "/api/actors/{}".format(random.choice(actor_ids)),
+            "location": "/api/locations/{}".format(random.choice(location_ids)),
+            "description": event_desc,
+            "start_date": get_next_rnd_date(),
+            "end_date": get_next_rnd_date(),
+            "@id": "/api/events/{}".format(event_id)
+        }
+
+        myDB.add_(event_id, "events", event_entry)
 
 
 review_ids = []
@@ -159,63 +175,3 @@ for i in range(0, 10):
         "itemRated": "/api/events/{}".format(random.choice(event_ids)),
         "@id": "http://localhost:5000/api/ratings/" + str(id)
     })
-
-
-
-
-
-
-
-for url in rss_event_feeds:
-    feed = feedparser.parse(url)
-    for entry in feed[ "items" ]:   
-       
-        # ---------------------------------------------------------------------------------
-        # add authors from feed to db
-
-        authors = [author["name"] for author in entry["authors"]]
-        authors_list = []
-        for author_name in authors:
-            author_id = db.next_id()
-
-            author_entry = { 
-                "name": author_name,
-                "self": "{}/{}/{}".format(ctx.base_url, "authors", author_id) 
-            }
-
-            authors_list.append(author_entry)
-            myDB.data["/authors"][author_id] = author_entry
-
-        categories = [t.term for t in entry.get('tags', [])]
-
-        event_id = db.next_id()
-        location_id = random.choice(location_ids)
-        location_name = myDB.data["/locations"][location_id]["name"]
-
-        test_entry = {
-            "@context": "/api/contexts/Event.jsonld",
-            "@id": "/api/events/139",
-            "@type": "Event",
-            "name": "Halloween",
-            "description": "This is halloween, this is halloween",
-            "start_date": "2015-10-31T00:00:00Z",
-            "end_date": "2015-10-31T23:59:59Z"
-        }
-
-        myDB.add("event", test_entry)
-
-
-        myDB.data["/events"][event_id] = { 
-            "title": entry["title"], 
-            "description": entry["description"], 
-            "categories": categories, 
-            "authors": authors_list, 
-            "location": { 
-                "id": location_id,
-                "name": location_name,
-                "self": "{}/{}/{}".format(ctx.base_url, "locations", location_id) 
-            },
-            "date": get_next_rnd_date(),
-            "link": entry["link"],
-            "self": "{}/{}/{}".format(ctx.base_url, "events", event_id) 
-        }

@@ -23,7 +23,11 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "http://schema.org/reviewBody"
+        id = "vocab:Review/reviewBody",
+        label = "reviewBody",
+        desc = "Review content",
+        domain="vocab:Review",
+        range="vocab:Event"
     )
 ))
 properties.append(HydraProperty(
@@ -33,7 +37,11 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "http://schema.org/itemReviewed"
+        id = "vocab:Review/itemReviewed",
+        label = "itemReviewed",
+        desc = "Reviewed event",
+        domain="vocab:Review",
+        range="vocab:Event"
     )
 ))
 properties.append(HydraProperty(
@@ -43,7 +51,11 @@ properties.append(HydraProperty(
     readonly = False,
     writeonly = False,
     property = HydraPropertyInfo(
-        id = "http://schema.org/author"
+        id = "vocab:Review/author",
+        label = "author",
+        desc = "Author for this review",
+        domain="vocab:Review",
+        range="vocab:Author"
     )
 ))
 

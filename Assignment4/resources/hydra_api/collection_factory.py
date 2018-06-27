@@ -28,14 +28,13 @@ def generic_entry_delete_action(id, entry_context, entry_id, entry_type, db_name
     return ctx.success(result, 200, headers = hydra.LINK_HEADER)
 
 def generic_entry_replace_action(data, id, entry_context, entry_id, entry_type, db_name):
-    current_id = db.next_id()
-
-    entry_url = "{}{}".format(ctx.base_url, entry_id.replace("<id>", current_id))
+    entry_url = "{}{}".format(ctx.base_url, entry_id.replace("<id>", id))
+    
     data["@context"] = entry_context
     data["@id"] = entry_url
     data["@type"] = entry_type
 
-    result = myDB.replace_(db_name, current_id, data)
+    result = myDB.replace_(db_name, id, data)
     if isinstance(result, Response):
         return result
 
